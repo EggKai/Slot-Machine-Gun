@@ -1,6 +1,5 @@
 # Slot Machine Gun
-A three-part, tongue-in-cheek installation that fuses a slot-machine experience, RFID-based payments, and a tracking foam-dart turret to illustrate how easily gambling systems can spiral. The system is intentionally playful while highlighting risks in a controlled, modular build.
-
+This project serves as an allegory for the inherent risks of gambling, emphasizing how effortlessly individuals can descend a slippery slope of chance and compulsion through the personification and of these hazards in this playful, gamified form, combining a slot machine with a foam dart launcher and a face tracking gimbal.
 ![Physical build](images/turret_photo.jpg)
 
 ![System Architecture](images/architecture_diagram.png)
