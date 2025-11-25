@@ -1,0 +1,11 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environments / config
+.env
+.venv/
+venv/
+
+# Logs
+*.log

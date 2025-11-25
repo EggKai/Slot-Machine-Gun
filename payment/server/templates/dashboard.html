@@ -1,0 +1,62 @@
+<!-- 
+Code generated with assistance from ChatGPT (OpenAI)
+Date generated: Nov 2025
+Modified for ICT1011 Project
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+
+    <h2 style="color: #333;">RFID Management Dashboard</h2>
+
+    <!-- Navigation Links -->
+    <nav style="margin-bottom: 20px;">
+        <a href="/register" style="text-decoration: none; color: #4CAF50; margin-right: 15px; font-weight: bold;">Register Employee</a>
+        <a href="/register_customer" style="text-decoration: none; color: #4CAF50; margin-right: 15px; font-weight: bold;">Register Customer</a>
+        <a href="/auth/logout" style="text-decoration: none; color: #4CAF50; font-weight: bold;">Logout</a>
+    </nav>
+    <hr>
+
+    <!-- Form to Add/Deduct Credits -->
+    <h3 style="color: #333;">Update Credits</h3>
+    <form action="/admin/add" method="post" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-width: 250px; display: inline-block; vertical-align: top; margin-right: 40px;">
+        <input type="text" name="rfid_id" placeholder="RFID ID" required 
+               style="width: 96%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;">
+        <input type="number" name="amount" placeholder="Amount (+/-)" required 
+               style="width: 96%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;">
+        <button type="submit" 
+                style="width: 100%; padding: 8px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                onmouseover="this.style.backgroundColor='#45a049'" onmouseout="this.style.backgroundColor='#4CAF50'">
+            Update Credits
+        </button>
+    </form>
+
+    <!-- Table of Customers with Details -->
+    <h3 style="color: #333;">Registered Customers</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 400px; display: inline-block; vertical-align: top;">
+        <tr style="background-color: #f2f2f2;">
+            <th style="padding: 10px; border: 1px solid #ccc; text-align: left;">Full Name</th>
+            <th style="padding: 10px; border: 1px solid #ccc; text-align: left;">National ID</th>
+            <th style="padding: 10px; border: 1px solid #ccc; text-align: left;">Address</th>
+            <th style="padding: 10px; border: 1px solid #ccc; text-align: left;">Age</th>
+            <th style="padding: 10px; border: 1px solid #ccc; text-align: left;">RFID ID</th>
+            <th style="padding: 10px; border: 1px solid #ccc; text-align: left;">Credits</th>
+        </tr>
+        {% for full_name, national_id, address, age, rfid_id, credits in customers %}
+        <tr style="background-color: {% if loop.index0 % 2 == 0 %}#f9f9f9{% else %}white{% endif %};">
+            <td style="padding: 10px; border: 1px solid #ccc; text-align: left;">{{ full_name }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc; text-align: left;">{{ national_id }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc; text-align: left;">{{ address }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc; text-align: left;">{{ age }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc; text-align: left;">{{ rfid_id }}</td>
+            <td style="padding: 10px; border: 1px solid #ccc; text-align: left;">{{ credits }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

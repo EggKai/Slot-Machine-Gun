@@ -1,0 +1,17 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environments and secrets
+.env
+.venv/
+venv/
+
+# Databases
+*.db
+*.sqlite
+
+# Test and cache
+.pytest_cache/
+*.log

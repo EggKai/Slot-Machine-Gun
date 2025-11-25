@@ -1,0 +1,49 @@
+<!-- 
+Code generated with assistance from ChatGPT (OpenAI)
+Date generated: Nov 2025
+Modified for ICT1011 Project
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Customer</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+
+    <h2 style="color: #333;">Register New Customer</h2>
+
+    <form action="/register_customer" method="post" 
+          style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 400px;">
+        
+        <label style="font-weight: bold;">Full Name:</label><br>
+        <input type="text" name="full_name" required
+               style="width: 95%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;"><br><br>
+
+        <label style="font-weight: bold;">National ID:</label><br>
+        <input type="text" name="national_id" required
+               style="width: 95%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;"><br><br>
+
+        <label style="font-weight: bold;">Address:</label><br>
+        <input type="text" name="address"
+               style="width: 95%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;"><br><br>
+
+        <label style="font-weight: bold;">Age:</label><br>
+        <input type="number" name="age" min="0"
+               style="width: 95%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;"><br><br>
+
+        <label style="font-weight: bold;">RFID Card ID:</label><br>
+        <input type="text" name="rfid_id" required
+               style="width: 95%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px;"><br><br>
+
+        <button type="submit"
+                style="width: 100%; padding: 8px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                onmouseover="this.style.backgroundColor='#45a049'"
+                onmouseout="this.style.backgroundColor='#4CAF50'">
+            Register
+        </button>
+    </form>
+
+</body>
+</html>

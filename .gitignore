@@ -1,0 +1,25 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+.venv/
+venv/
+
+# Builds / dist
+build/
+dist/
+*.egg-info/
+*.log
+
+# Databases / misc
+*.db
+*.sqlite

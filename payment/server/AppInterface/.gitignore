@@ -1,0 +1,18 @@
+# Gradle / Android
+.gradle/
+local.properties
+/.idea/
+*.iml
+.kotlin/
+build/
+app/build/
+captures/
+.cxx/
+
+# OS / misc
+.DS_Store
+Thumbs.db
+*.log
+
+# Rust (for Cargo metadata present)
+/target/
