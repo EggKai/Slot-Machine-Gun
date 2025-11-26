@@ -21,6 +21,7 @@ This project serves as an allegory for the inherent risks of gambling, emphasizi
 
 ### Key images
 - Slots + payment wiring: ![RFID schematic](images/rfid_schematic.png)
+- Slots UI: ![TinyCircuits slots](images/tinycircuit_slots.png)
 - Turret wiring: ![Turret schematic](images/turret_schematic.png)
 - Turret wiring schema: ![Turret electrical wiring](images/turret_schem.png)
 
@@ -70,6 +71,7 @@ Quantities
   - `0xAA` -> display "No Credits Left"; `0xAB` + payout byte -> show "You win N credits!".
   - High-bit masks (`0x80 | bits`) flash winning rows.
 - Build/upload: use Arduino IDE with TinyScreen/WiFi101 libs, or PlatformIO if you port the board definition. Flash three devices with distinct `devNum`.
+- For graphics, assets, and deeper slot behavior docs, see `slots/game_and_graphics_docs.pdf`.
 
 ## RFID scan sketch (`slots/rfid_scanner.ino`)
 - MFRC522 wired to SS=D10, RST=D9; streams detected UID over serial to the Python gateway.

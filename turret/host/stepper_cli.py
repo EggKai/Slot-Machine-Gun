@@ -409,6 +409,8 @@ def _handle_server_messages(sock: socket.socket, client: StepperClient, stop_eve
                         daemon=True,
                     )
                     rec_thread.start()
+                print('[STATUS] recording started, arming shot')
+                time.sleep(0.5)
                 print('[STATUS] shooting')
                 client.step_c(-500)
                 if rec_thread:
