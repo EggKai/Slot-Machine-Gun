@@ -7,6 +7,8 @@ import time
 from datetime import datetime
 from typing import Optional
 
+from killcambot import send_video_to_subscribers  # local helper to push recorded clips
+
 try:
     import cv2
 except Exception:
@@ -302,7 +304,7 @@ def _target_once(ns, client: StepperClient):
     return resp
 
 
-def _record_clip(cam: str, cam_api: str, duration: float = 5.0, fps: int = 20, ext: str = "avi") -> Optional[str]:
+def _record_clip(cam: str, cam_api: str, duration: float = 5.0, fps: int = 20, ext: str = "mp4") -> Optional[str]:
     """Record a short clip from the specified camera; returns path or None."""
     if cv2 is None:
         print("[SERVER] OpenCV not installed; cannot record clip")
@@ -321,17 +323,32 @@ def _record_clip(cam: str, cam_api: str, duration: float = 5.0, fps: int = 20, e
         cam_src = int(cam)
     except ValueError:
         pass
-    cap = cv2.VideoCapture(cam_src, api_map.get(cam_api, api_map["auto"]))
-    if not cap.isOpened():
-        print(f"[SERVER] Failed to open camera {cam} with api {cam_api}")
+
+    def open_with_fallback():
+        preferred = [api_map.get(cam_api, api_map["auto"])]
+        # Common fallbacks to avoid blank captures on Windows.
+        # Skip MSMF to reduce noisy grabFrame warnings on some drivers.
+        for api_key in ("dshow", "auto"):
+            val = api_map.get(api_key)
+            if val is not None and val not in preferred:
+                preferred.append(val)
+        for backend in preferred:
+            cap_try = cv2.VideoCapture(cam_src, backend)
+            if not cap_try.isOpened():
+                cap_try.release()
+                continue
+            ok, frm = cap_try.read()
+            if ok and frm is not None and frm.mean() > 1.0:
+                return cap_try, frm
+            cap_try.release()
+        return None, None
+
+    cap, frame = open_with_fallback()
+    if cap is None or frame is None:
+        print(f"[SERVER] Failed to open camera {cam} with api {cam_api} (and fallbacks)")
         return None
 
     # Get frame size
-    ok, frame = cap.read()
-    if not ok or frame is None:
-        cap.release()
-        print("[SERVER] Failed to read first frame; aborting recording")
-        return None
     h, w = frame.shape[:2]
     ext = (ext or "avi").lower()
     if ext == "mp4":
@@ -378,24 +395,31 @@ def _handle_server_messages(sock: socket.socket, client: StepperClient, stop_eve
             print(f"[SERVER] recv: {msg}")
             if msg.upper().__contains__("NO CREDS"):
                 rec_thread = None
+                video_path_holder = {"path": None}
                 if rec_cfg:
                     rec_thread = threading.Thread(
-                        target=_record_clip,
-                        args=(
+                        target=lambda holder: holder.update({"path": _record_clip(
                             rec_cfg.get("cam", "0"),
                             rec_cfg.get("cam_api", "auto"),
-                            rec_cfg.get("duration", 5.0),
-                            20,
-                            rec_cfg.get("ext", "avi"),
-                        ),
+                            rec_cfg.get("duration", 10.0),
+                            10, # static fps, change this according to 
+                            rec_cfg.get("ext", "mp4"),
+                        )}),
+                        args=(video_path_holder,),
                         daemon=True,
                     )
                     rec_thread.start()
+                print('[STATUS] shooting')
                 client.step_c(-500)
                 if rec_thread:
-                    rec_thread.join(timeout=rec_cfg.get("duration", 5.0) + 2.0)
-                time.sleep(3.0)
-                client.step_c(500)
+                    rec_thread.join(timeout=rec_cfg.get("duration", 7.0) + 2.0)
+                    video_path = video_path_holder.get("path")
+                    if video_path:
+                        try:
+                            send_video_to_subscribers(video_path, caption="NO CREDS event")
+                        except Exception as e:
+                            print(f"[WARN] Failed to send video: {e}")
+                client.step_c(240)
                 stop_event.set()
                 return True
             return False
@@ -490,10 +514,15 @@ def main(argv=None) -> int:
     p.add_argument("--invert-x", action="store_true", help="Invert pan direction")
     p.add_argument("--invert-y", action="store_true", help="Invert tilt direction")
     p.add_argument("--no-display", action="store_true", help="Disable window during tracking")
-    p.add_argument("--record-ext", choices=["avi", "mp4"], default="avi", help="Recording format for NO CREDS clips")
+    p.add_argument("--record-ext", choices=["avi", "mp4"], default="mp4", help="Recording format for NO CREDS clips")
     p.add_argument("--tcp-host", default="0.0.0.0", help="TCP bind host for listen command")
     p.add_argument("--tcp-port", type=int, default=9000, help="TCP bind port for listen command")
-    p.add_argument("--listen-while-track", action="store_true", help="Start TCP listener while tracking")
+    p.add_argument(
+        "--listen-while-track",
+        action="store_true",
+        default=True,
+        help="Start TCP listener while tracking (enabled by default)",
+    )
     ns = p.parse_args(argv)
 
     client = StepperClient(port=ns.port, baud=ns.baud, timeout=ns.timeout, verbose=ns.verbose)
@@ -562,7 +591,7 @@ def main(argv=None) -> int:
         elif cmd == "listen":
             if len(a) != 0:
                 p.error("listen takes no args")
-            rec_cfg = {"cam": ns.cam, "cam_api": ns.cam_api, "duration": 5.0, "ext": ns.record_ext}
+            rec_cfg = {"cam": ns.cam, "cam_api": ns.cam_api, "duration": 10.0, "ext": ns.record_ext or "mp4"}
             srv, conn, stop_event = start_server(ns.tcp_host, ns.tcp_port, client, rec_cfg)
             try:
                 while True:
@@ -589,7 +618,7 @@ def main(argv=None) -> int:
             srv = conn = stop_event = None
             server_ctx = None
             if ns.listen_while_track:
-                rec_cfg = {"cam": ns.cam, "cam_api": ns.cam_api, "duration": 5.0, "ext": ns.record_ext}
+                rec_cfg = {"cam": ns.cam, "cam_api": ns.cam_api, "duration": 10.0, "ext": ns.record_ext or "mp4"}
                 srv, conn_holder, stop_event, _ = start_server_async(ns.tcp_host, ns.tcp_port, client, rec_cfg)
                 server_ctx = (srv, conn_holder, stop_event)
             try:

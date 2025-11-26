@@ -23,3 +23,7 @@ dist/
 # Databases / misc
 *.db
 *.sqlite
+
+#videos
+*.avi
+*.mp4

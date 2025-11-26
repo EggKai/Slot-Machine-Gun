@@ -16,12 +16,12 @@ async def _async_send_video_core(video_filename: str, caption: str = None):
     # Configuration stuff
     TELEGRAM_BOT_TOKEN = "7954230057:AAHpn8-TH2Ftn45yBweE3zGQ93PNPTCt56s"
     VIDEO_FOLDER = Path(__file__).resolve().parent 
-    # VIDEO_FOLDER = Path('C:\\dingus\\'))
+    # VIDEO_FOLDER = Path('C:\\example\\'))
     # Use the option above if you want to specify an absolute path
 
 
     SUBSCRIBER_CHAT_IDS = [
-        '-5078232020', # join this group using https://t.me/+iwu9Y1COVo40NDU1
+        '-1003472830495', # join this group using https://t.me/+iwu9Y1COVo40NDU1
         # you can add more to this list
     ]
 
@@ -47,7 +47,7 @@ async def _async_send_video_core(video_filename: str, caption: str = None):
                     video=video_file,
                     caption=caption,
                     read_timeout=60, # Increase timeout for large files
-                    write_timeout=60, # I farted while writing this
+                    write_timeout=60, # as above
                 )
                 print(f"Successfully sent {video_filename}")
                 await asyncio.sleep(1) 
@@ -59,7 +59,7 @@ async def _async_send_video_core(video_filename: str, caption: str = None):
 
 
 def send_video_to_subscribers(video_filename: str, caption: str = None):
-    print("Delivering video to your mom")
+    print("[STATUS] Delivering video to your Telegram channel")
     try:
         asyncio.run(_async_send_video_core(video_filename, caption))
     except Exception as e:

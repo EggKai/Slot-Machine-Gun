@@ -131,17 +131,17 @@ pio device monitor -b 115200
 ```
 
 ## Turret host tools (`turret/host`)
-- `stepper_cli.py` - Serial client plus extras. With no arguments it now auto-runs face tracking + listener with: `track --port COM5 --cam 0 --cam-api dshow --rpm 12 --step-scale 0.05 --max-step 50 --listen-while-track --tcp-host 0.0.0.0 --tcp-port 9000`.
+- `stepper_cli.py` - Serial client plus extras. With no arguments it now auto-runs face tracking + listener with: `track --port COM5 --cam 0 --cam-api dshow --rpm 12 --step-scale 0.05 --max-step 50 --listen-while-track (default on) --tcp-host 0.0.0.0 --tcp-port 9000`.
   - Basic commands: `python stepper_cli.py speed 15 --port COM5`.
   - Face tracking (custom): `python stepper_cli.py track --port COM5 --cam 0 --cam-api dshow --rpm 12 --step-scale 0.05 --max-step 50`.
   - TCP listener: `python stepper_cli.py listen --tcp-port 9000` to react to `"NO CREDS"` from the payment gateway (fires motor C sweep and optional camera clip).
-  - Combined tracking + listener (custom ports/backends): `python stepper_cli.py track --listen-while-track --tcp-host 0.0.0.0 --tcp-port 9000`.
+  - Combined tracking + listener (custom ports/backends): `python stepper_cli.py track --listen-while-track (default on) --tcp-host 0.0.0.0 --tcp-port 9000`.
 - `killcambot.py` - Utility to send recorded clips to Telegram subscribers; requires `python-telegram-bot` and a valid bot token/chat IDs.
 
 ## Suggested bring-up order
 1. **Credit service** - Ensure `/rfid/deduct`, `/rfid/add`, and `/admin/add` endpoints work against `shop.db`.
 2. **Jackpot server** - Start `payment/gateway/jackpot.py` and seed credits via the console (`c` or `set N`).
-3. **Turret listener** - Run `stepper_cli.py listen --tcp-port 9000` (or `track --listen-while-track`).
+3. **Turret listener** - Run `stepper_cli.py listen --tcp-port 9000` (or `track --listen-while-track (default on)`).
 4. **Gateway bridge** - Start `deduct_credits_to_spin.py` with correct serial port and API IPs.
 5. **RFID scanner** - Flash `slots/rfid_scanner.ino` to the reader Arduino.
 6. **Slot displays** - Flash `slots/jackpot_extra3x1.ino` to three TinyScreen+ units with `devNum` 2/3/4 and confirm they reach the server.
